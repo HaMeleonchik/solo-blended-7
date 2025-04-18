@@ -1,11 +1,11 @@
 {
-  "name": "blended_products",
+  "name": "solo-blended-7",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --base=/blended_products/",
+    "build": "vite build --base=/solo-blended-7/",
     "preview": "vite preview"
   },
   "devDependencies": {
