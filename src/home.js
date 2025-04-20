@@ -6,6 +6,7 @@ import {
   getProductByName,
 } from './js/products-api.js';
 
+
 import { getFromLocalStorage } from './js/storage.js';
 import {
   createMarkupProduct,
@@ -14,11 +15,13 @@ import {
 } from './js/helpers.js';
 
 import { clickCardFoo } from './js/modal.js';
+
 categoryRender();
 
 let categoryName = '';
 let currentPage = 0;
 let currentMode = 'All';
+let idCard = 0;
 
 const productList = document.querySelector('ul.products');
 const CategorieList = document.querySelector('ul.categories');
