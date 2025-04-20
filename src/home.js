@@ -3,10 +3,17 @@ import {
   getAllCategory,
   getAllProducts,
   getProductsByCategory,
-  getProductById,
   getProductByName,
 } from './js/products-api.js';
 
+import { getFromLocalStorage } from './js/storage.js';
+import {
+  createMarkupProduct,
+  showLoadMoreButton,
+  hideLoadMoreButton,
+} from './js/helpers.js';
+
+import { clickCardFoo } from './js/modal.js';
 categoryRender();
 
 let categoryName = '';
@@ -84,87 +91,19 @@ async function renderProduct(event) {
   }
 }
 
-// markupProduct
-function createMarkupProduct(product) {
-  return product
-    .map(
-      ({ id, title, category, images, description, brand, price }) =>
-        `
-  <li class="products__item" data-id="${id}">
-    <img class="products__image" src="${images[0]}" alt="${description}"/>
-    <p class="products__title">${title}</p>
-    <p class="products__brand"><span class="products__brand--bold">Brand: ${brand}</span></p>
-    <p class="products__category">Category: ${category}</p>
-    <p class="products__price">Price: $${price}</p>
- </li>
-  `
-    )
-    .join('');
-}
-
-//  hide/show LoadMoreButton
-function showLoadMoreButton() {
-  if (LoadMoreBtn) {
-    LoadMoreBtn.style.display = 'block';
-  }
-}
-function hideLoadMoreButton() {
-  if (LoadMoreBtn) {
-    LoadMoreBtn.style.display = 'none';
-  }
-}
 // modal
 productList.addEventListener('click', clickCardFoo);
 
-const modalProductDiv = document.querySelector('.modal-product');
-const modal = modalProductDiv.closest('.modal');
-
-async function clickCardFoo(event) {
-  const card = event.target.closest('.products__item');
-  if (!card) {
-    return;
-  }
-  const idCard = card.dataset.id;
-  try {
-    const getProduct = await getProductById(idCard);
-    modalProductDiv.innerHTML = createMarkupModalProduct(getProduct);
-    modal.classList.add('modal--is-open');
-  } catch (error) {
-    console.log(error);
-  }
+// add-and-Remove-To-Cart
+const navCount = document.querySelector('.nav__count');
+let counter = 0;
+// savedCartCounter
+const savedCartCounter = getFromLocalStorage('cartCounter');
+if (savedCartCounter) {
+  counter = savedCartCounter;
+  navCount.textContent = counter;
 }
 
-// Тут вихід з модалки(виходить коли натиснути на модальне вікно або на любий обєкт в ній)
-
-modal.addEventListener('click', closeModalFoo);
-function closeModalFoo() {
-  modal.classList.remove('modal--is-open');
-}
-
-// createMarkupModalProduct
-function createMarkupModalProduct({
-  returnPolicy,
-  title,
-  category,
-  images,
-  description,
-  shippingInformation,
-  price,
-}) {
-  return `
-<img class="modal-product__img" src="${images[0]}" alt="" />
-      <div class="modal-product__content">
-        <p class="modal-product__title">${title}</p>
-        <ul class="modal-product__tags">${category}</ul>
-        <p class="modal-product__description">${description}</p>
-        <p class="modal-product__shipping-information">Shipping:${shippingInformation}</p>
-        <p class="modal-product__return-policy">Return Policy:${returnPolicy}</p>
-        <p class="modal-product__price">Price:${price}$</p>
-        <button class="modal-product__buy-btn" type="button">Buy</button>
-      </div>
-
-  `;
-}
 // form
 const form = document.querySelector('.search-form');
 const inputSearch = form.querySelector('.search-form__input');
