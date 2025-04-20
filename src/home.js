@@ -3,12 +3,18 @@ import {
   getAllCategory,
   getAllProducts,
   getProductsByCategory,
-  getProductById,
   getProductByName,
 } from './js/products-api.js';
 
-import { addToLocalStorage, getFromLocalStorage } from './js/storage.js';
-import { createMarkupProduct, createMarkupModalProduct } from './js/helpers.js';
+
+import { getFromLocalStorage } from './js/storage.js';
+import {
+  createMarkupProduct,
+  showLoadMoreButton,
+  hideLoadMoreButton,
+} from './js/helpers.js';
+
+import { clickCardFoo } from './js/modal.js';
 
 categoryRender();
 
@@ -88,60 +94,9 @@ async function renderProduct(event) {
   }
 }
 
-//  hide/show LoadMoreButton
-function showLoadMoreButton() {
-  if (LoadMoreBtn) {
-    LoadMoreBtn.style.display = 'block';
-  }
-}
-function hideLoadMoreButton() {
-  if (LoadMoreBtn) {
-    LoadMoreBtn.style.display = 'none';
-  }
-}
 // modal
 productList.addEventListener('click', clickCardFoo);
 
-const modalProductDiv = document.querySelector('.modal-product');
-const modal = modalProductDiv.closest('.modal');
-
-const modalCloseBtn = modal.querySelector('.modal__close-btn');
-
-async function clickCardFoo(event) {
-  const card = event.target.closest('.products__item');
-  if (!card) {
-    return;
-  }
-  idCard = card.dataset.id;
-  try {
-    const getProduct = await getProductById(idCard);
-    modalProductDiv.innerHTML = createMarkupModalProduct(getProduct);
-    modal.classList.add('modal--is-open');
-
-    // check
-    const modalProductCartBtn = modal.querySelector(
-      '.modal-product__btn--cart'
-    );
-    const cards = getFromLocalStorage('Cards') || [];
-    const productCheck = cards.find(card => card === idCard);
-    if (productCheck) {
-      modalProductCartBtn.textContent = 'Remove from Cart';
-    } else {
-      modalProductCartBtn.textContent = 'Add to cart';
-    }
-
-    //card listener
-    modalProductCartBtn.addEventListener('click', modalProductCartFoo);
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-// Вихід з модалки
-modalCloseBtn.addEventListener('click', closeModalFoo);
-function closeModalFoo() {
-  modal.classList.remove('modal--is-open');
-}
 // add-and-Remove-To-Cart
 const navCount = document.querySelector('.nav__count');
 let counter = 0;
@@ -150,25 +105,6 @@ const savedCartCounter = getFromLocalStorage('cartCounter');
 if (savedCartCounter) {
   counter = savedCartCounter;
   navCount.textContent = counter;
-}
-
-function modalProductCartFoo(event) {
-  if (event.target.textContent === 'Remove from Cart') {
-    const cards = getFromLocalStorage('Cards') || [];
-    const removeCardsForStorage = cards.filter(id => id !== idCard);
-    addToLocalStorage('Cards', removeCardsForStorage);
-    counter = navCount.textContent = removeCardsForStorage.length;
-    addToLocalStorage('cartCounter', counter);
-
-    event.target.textContent = 'Add to cart';
-    return;
-  }
-  event.target.textContent = 'Remove from Cart';
-  const cards = getFromLocalStorage('Cards') || [];
-  cards.push(idCard);
-  addToLocalStorage('Cards', cards);
-  counter = navCount.textContent = [...cards].length;
-  addToLocalStorage('cartCounter', counter);
 }
 
 // form

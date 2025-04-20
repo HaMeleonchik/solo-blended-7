@@ -40,3 +40,17 @@ export function createMarkupModalProduct({
 
   `;
 }
+
+const LoadMoreBtn = document.querySelector('.load-more-btn');
+//  hide/show LoadMoreButton
+export function showLoadMoreButton() {
+  if (LoadMoreBtn) {
+    LoadMoreBtn.style.display = 'block';
+  }
+}
+export function hideLoadMoreButton() {
+  if (LoadMoreBtn) {
+    LoadMoreBtn.style.display = 'none';
+  }
+}
+
