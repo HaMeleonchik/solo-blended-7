@@ -7,14 +7,14 @@ import { getProductById } from './js/products-api.js';
 import { getFromLocalStorage } from './js/storage.js';
 import { createMarkupProduct } from './js/helpers.js';
 import { clickCardFoo } from './js/modal.js';
-renderProduct();
+renderProductCart();
 // modal
 const productsList = document.querySelector('.products-cart');
 if (productsList) {
   productsList.addEventListener('click', clickCardFoo);
 }
 
-export async function renderProduct() {
+export async function renderProductCart() {
   try {
     const productsList = document.querySelector('.products-cart');
     if (!productsList) return;
@@ -26,15 +26,21 @@ export async function renderProduct() {
     const productPromise = cards.map(id => getProductById(id));
     const product = await Promise.all(productPromise);
 
-    const navCount = document.querySelector('.nav__count');
+    const navCountCart = document.querySelector('[data-cart-count]');
+    const navCountWishlist = document.querySelector('[data-wishlist-count]');
+    const savedCartCounter = getFromLocalStorage('cartCounter');
+    const savedWishlistCounter = getFromLocalStorage('wishlistCounter');
     const counterItem = document.querySelectorAll('.cart-summary__value');
 
-    const savedCartCounter = getFromLocalStorage('cartCounter');
     if (savedCartCounter) {
-      navCount.textContent = savedCartCounter;
+      navCountCart.textContent = savedCartCounter;
       if (counterItem.length > 0) {
         counterItem[0].textContent = savedCartCounter;
       }
+    }
+
+    if (savedWishlistCounter) {
+      navCountWishlist.textContent = savedWishlistCounter;
     }
 
     const prices = product.map(price => price.price);
