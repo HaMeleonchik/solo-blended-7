@@ -95,13 +95,23 @@ async function renderProduct(event) {
 productList.addEventListener('click', clickCardFoo);
 
 // add-and-Remove-To-Cart
-const navCount = document.querySelector('.nav__count');
-let counter = 0;
+const navCountCart = document.querySelector('[data-cart-count]');
+let cartCounter = 0;
 // savedCartCounter
 const savedCartCounter = getFromLocalStorage('cartCounter');
 if (savedCartCounter) {
-  counter = savedCartCounter;
-  navCount.textContent = counter;
+  cartCounter = savedCartCounter;
+  navCountCart.textContent = cartCounter;
+}
+
+// add-and-Remove-To-wishlist
+const navCountWishlist = document.querySelector('[data-wishlist-count]');
+let wishlistCounter = 0;
+// savedWishlistCounter
+const savedWishlistCounter = getFromLocalStorage('wishlistCounter');
+if (savedWishlistCounter) {
+  wishlistCounter = savedWishlistCounter;
+  navCountWishlist.textContent = wishlistCounter;
 }
 
 // form

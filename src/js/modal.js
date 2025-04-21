@@ -2,7 +2,8 @@
 import { createMarkupModalProduct } from './helpers.js';
 import { addToLocalStorage, getFromLocalStorage } from './storage.js';
 import { getProductById } from './products-api.js';
-import { renderProduct } from '/cart.js';
+import { renderProductCart } from '/cart.js';
+import { renderProductWishlist } from '/wishlist.js';
 let idCard = 0;
 
 const modalProductDiv = document.querySelector('.modal-product');
@@ -25,16 +26,28 @@ export async function clickCardFoo(event) {
     const modalProductCartBtn = modal.querySelector(
       '.modal-product__btn--cart'
     );
-    const cards = getFromLocalStorage('Cards') || [];
-    const productCheck = cards.find(card => card === idCard);
-    if (productCheck) {
+    const cartCards = getFromLocalStorage('Cards') || [];
+    const productCartCheck = cartCards.find(card => card === idCard);
+    if (productCartCheck) {
       modalProductCartBtn.textContent = 'Remove from Cart';
     } else {
       modalProductCartBtn.textContent = 'Add to cart';
     }
-
+    // check WishList
+    const modalProductWishListBtn = document.querySelector(
+      '.modal-product__btn--wishlist'
+    );
+    const wishlistcards = getFromLocalStorage('Wishlist') || [];
+    const productWishlistCheck = wishlistcards.find(card => card === idCard);
+    if (productWishlistCheck) {
+      modalProductWishListBtn.textContent = 'Remove from Wishlist';
+    } else {
+      modalProductWishListBtn.textContent = 'Add to Wishlist';
+    }
     //card listener
     modalProductCartBtn.addEventListener('click', modalProductCartFoo);
+    modalProductWishListBtn.addEventListener('click', modalProductWishlistFoo);
+
     //   close Modal
     modalCloseBtn.addEventListener('click', () => {
       modal.classList.remove('modal--is-open');
@@ -45,16 +58,17 @@ export async function clickCardFoo(event) {
 }
 
 // add-and-Remove-To-Cart
-const navCount = document.querySelector('.nav__count');
-let counter = 0;
-
+const navCountCart = document.querySelector('[data-cart-count]');
+const navCountWishlist = document.querySelector('[data-wishlist-count]');
+let Cartcounter = 0;
+let Wishlistcounter = 0;
 function modalProductCartFoo(event) {
   if (event.target.textContent === 'Remove from Cart') {
     const cards = getFromLocalStorage('Cards') || [];
     const removeCardsForStorage = cards.filter(id => id !== idCard);
     addToLocalStorage('Cards', removeCardsForStorage);
-    counter = navCount.textContent = removeCardsForStorage.length;
-    addToLocalStorage('cartCounter', counter);
+    Cartcounter = navCountCart.textContent = removeCardsForStorage.length;
+    addToLocalStorage('cartCounter', Cartcounter);
     event.target.textContent = 'Add to cart';
 
     cartRenderFoo();
@@ -64,8 +78,8 @@ function modalProductCartFoo(event) {
   const cards = getFromLocalStorage('Cards') || [];
   cards.push(idCard);
   addToLocalStorage('Cards', cards);
-  counter = navCount.textContent = [...cards].length;
-  addToLocalStorage('cartCounter', counter);
+  Cartcounter = navCountCart.textContent = [...cards].length;
+  addToLocalStorage('cartCounter', Cartcounter);
 
   cartRenderFoo();
 }
@@ -74,6 +88,37 @@ function modalProductCartFoo(event) {
 function cartRenderFoo() {
   const page = document.body.dataset.page;
   if (page === 'cart') {
-    renderProduct();
+    renderProductCart();
+  }
+}
+
+// add-and-Remove-To-Wishlist
+function modalProductWishlistFoo(event) {
+  if (event.target.textContent === 'Remove from Wishlist') {
+    const cards = getFromLocalStorage('Wishlist') || [];
+    const removeCardsForStorage = cards.filter(id => id !== idCard);
+    addToLocalStorage('Wishlist', removeCardsForStorage);
+    Wishlistcounter = navCountWishlist.textContent =
+      removeCardsForStorage.length;
+    addToLocalStorage('wishlistCounter', Wishlistcounter);
+    event.target.textContent = 'Add to Wishlist';
+
+    wishlistRenderFoo();
+    return;
+  }
+  event.target.textContent = 'Remove from Wishlist';
+  const cards = getFromLocalStorage('Wishlist') || [];
+  cards.push(idCard);
+  addToLocalStorage('Wishlist', cards);
+  Wishlistcounter = navCountWishlist.textContent = [...cards].length;
+  addToLocalStorage('wishlistCounter', Wishlistcounter);
+
+  wishlistRenderFoo();
+}
+// cartRender
+function wishlistRenderFoo() {
+  const page = document.body.dataset.page;
+  if (page === 'wishlist') {
+    renderProductWishlist();
   }
 }
