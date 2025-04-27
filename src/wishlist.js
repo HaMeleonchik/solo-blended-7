@@ -1,8 +1,11 @@
 //Логіка сторінки Wishlist
 import { getFromLocalStorage } from './js/storage.js';
 import { getProductById } from './js/products-api.js';
-import { createMarkupProduct } from './js/helpers.js';
+import { createMarkupProduct, showLoader, hideLoader } from './js/helpers.js';
 import { clickCardFoo } from './js/modal.js';
+import { ThemeChange, setThemeFromLocalStorage } from './js/theme-switcher.js';
+setThemeFromLocalStorage();
+
 // modal
 const productsList = document.querySelector('.products-wishlist');
 if (productsList) {
@@ -12,6 +15,7 @@ if (productsList) {
 renderProductWishlist();
 export async function renderProductWishlist() {
   try {
+    showLoader();
     const productsList = document.querySelector('.products-wishlist');
     if (!productsList) return;
 
@@ -37,5 +41,11 @@ export async function renderProductWishlist() {
     productsList.innerHTML = createMarkupProduct(product);
   } catch (error) {
     console.log(error);
+  } finally {
+    hideLoader();
   }
 }
+
+// theme
+const themeBtn = document.querySelector('.theme-btn');
+themeBtn.addEventListener('click', ThemeChange);

@@ -6,22 +6,23 @@ import {
   getProductByName,
 } from './js/products-api.js';
 
-
 import { getFromLocalStorage } from './js/storage.js';
 import {
   createMarkupProduct,
   showLoadMoreButton,
   hideLoadMoreButton,
+  showLoader,
+  hideLoader,
 } from './js/helpers.js';
-
 import { clickCardFoo } from './js/modal.js';
 
+import { ThemeChange, setThemeFromLocalStorage } from './js/theme-switcher.js';
+setThemeFromLocalStorage();
 categoryRender();
 
 let categoryName = '';
 let currentPage = 0;
 let currentMode = 'All';
-let idCard = 0;
 
 const productList = document.querySelector('ul.products');
 const CategorieList = document.querySelector('ul.categories');
@@ -52,6 +53,7 @@ async function renderProduct(event) {
   if (event.target.nodeName !== 'BUTTON') {
     return;
   }
+  showLoader();
   productHaveCheckNoneActive();
   categoryName = event.target.textContent;
 
@@ -91,6 +93,8 @@ async function renderProduct(event) {
     productList.innerHTML = createMarkupProduct(res.products);
   } catch (error) {
     console.log(error);
+  } finally {
+    hideLoader();
   }
 }
 
@@ -127,6 +131,7 @@ async function searchFormFoo(event) {
   event.preventDefault();
   currentPage = 1;
   currentMode = 'search';
+  showLoader();
   productHaveCheckNoneActive();
 
   try {
@@ -148,6 +153,8 @@ async function searchFormFoo(event) {
     productList.innerHTML = createMarkupProduct(getProducts.products);
   } catch (error) {
     console.log(error);
+  } finally {
+    hideLoader();
   }
 }
 // btn-clear
@@ -157,6 +164,7 @@ clearBtn.addEventListener('click', clearBtnFoo);
 async function clearBtnFoo() {
   inputSearch.value = '';
   currentMode = 'All';
+  showLoader();
   productHaveCheckNoneActive();
 
   const allProducts = await getAllProducts(currentPage);
@@ -166,6 +174,7 @@ async function clearBtnFoo() {
   } else {
     hideLoadMoreButton();
   }
+  hideLoader();
   return;
 }
 
@@ -176,6 +185,7 @@ LoadMoreBtn.addEventListener('click', loadMoreFoo);
 async function loadMoreFoo() {
   currentPage += 1;
   try {
+    showLoader();
     if (currentMode === 'All') {
       const { products } = await getAllProducts(currentPage);
 
@@ -205,6 +215,8 @@ async function loadMoreFoo() {
     }
   } catch (error) {
     console.log(error);
+  } finally {
+    hideLoader();
   }
 }
 // products.length === 0
@@ -219,3 +231,7 @@ function productHaveCheckNoneActive() {
   if (divNotFound.classList.contains('not-found--visible'))
     divNotFound.classList.remove('not-found--visible');
 }
+
+// theme
+const themeBtn = document.querySelector('.theme-btn');
+themeBtn.addEventListener('click', ThemeChange);
