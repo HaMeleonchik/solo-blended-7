@@ -5,8 +5,11 @@ import 'izitoast/dist/css/iziToast.min.css';
 
 import { getProductById } from './js/products-api.js';
 import { getFromLocalStorage } from './js/storage.js';
-import { createMarkupProduct } from './js/helpers.js';
+import { createMarkupProduct, showLoader, hideLoader } from './js/helpers.js';
 import { clickCardFoo } from './js/modal.js';
+import { ThemeChange, setThemeFromLocalStorage } from './js/theme-switcher.js';
+setThemeFromLocalStorage();
+
 renderProductCart();
 // modal
 const productsList = document.querySelector('.products-cart');
@@ -16,6 +19,7 @@ if (productsList) {
 
 export async function renderProductCart() {
   try {
+    showLoader();
     const productsList = document.querySelector('.products-cart');
     if (!productsList) return;
 
@@ -53,6 +57,8 @@ export async function renderProductCart() {
     productsList.innerHTML = createMarkupProduct(product);
   } catch (error) {
     console.log(error);
+  } finally {
+    hideLoader();
   }
 }
 const buyBtn = document.querySelector('.cart-summary__btn');
@@ -73,3 +79,7 @@ function buyProducts() {
     iconUrl: 'icon/success.svg',
   });
 }
+
+// theme
+const themeBtn = document.querySelector('.theme-btn');
+themeBtn.addEventListener('click', ThemeChange);
